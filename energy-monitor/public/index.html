@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моніторинг енергооб'єкта</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CSS стилізація (Сучасний дизайн, градієнти, тіні) */
+        :root {
+            --primary: #007bff; --success: #28a745; --warning: #ffc107; --danger: #dc3545;
+            --bg-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-grad); margin: 0; padding: 20px; color: #333; min-height: 100vh; }
+        
+        /* Семантична розмітка та адаптивність */
+        header { text-align: center; color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        main.wrapper { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; align-items: flex-start; }
+        section { background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); flex: 1; }
+        
+        h2 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; transition: border-color 0.3s; }
+        input:focus { border-color: var(--primary); outline: none; }
+        
+        .btn { width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: transform 0.2s, background 0.3s; margin-top: 10px; font-weight: bold;}
+        .btn:hover { transform: translateY(-2px); }
+        .btn-submit { background-color: var(--success); }
+        .btn-random { background-color: #6f42c1; margin-bottom: 15px;}
+        .btn-update { background-color: var(--primary); width: auto; padding: 8px 15px; }
+        .btn-export { background-color: #17a2b8; margin-top: 20px; }
+
+        /* Дашборд та картки */
+        .dashboard-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;}
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        
+        /* Анімації та переходи */
+        .card { padding: 15px; border-radius: 8px; border-left: 6px solid #ccc; text-align: center; font-weight: bold; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: all 0.4s ease; }
+        .card:hover { transform: scale(1.03); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        .card span { display: block; font-size: 22px; margin-top: 8px; }
+
+        /* Візуалізація статусів */
+        .status-normal { border-left-color: var(--success); color: #155724; }
+        .status-warning { border-left-color: var(--warning); color: #856404; background-color: #fffdf5;}
+        .status-critical { border-left-color: var(--danger); color: #721c24; background-color: #fdf5f6; animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); } }
+
+        .chart-container { width: 100%; height: 250px; margin-top: 20px; }
+
+        /* Медіа-запити для різних пристроїв */
+        @media (max-width: 800px) {
+            main.wrapper { flex-direction: column; }
+            section { width: 100%; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SCADA: Моніторинг енергетичного об'єкта</h1>
+</header>
+
+<main class="wrapper">
+    <section aria-labelledby="form-heading">
+        <h2 id="form-heading">Введення параметрів</h2>
+        
+        <button type="button" class="btn btn-random" id="btnRandom" aria-label="Згенерувати випадкові показники">🎲 Згенерувати тестові дані</button>
+        
+        <form action="/submit-data" method="POST">
+            <div class="form-group"><label>Ім'я оператора:</label><input type="text" name="operatorName" id="opName" required aria-required="true"></div>
+            <div class="form-group"><label>Тип об'єкта:</label><input type="text" name="objectType" id="objType" value="Насосна станція" required></div>
+            <div class="form-group"><label>Тиск (атм) [Норма: 4-5.5]:</label><input type="number" name="pressure" id="inpPressure" min="0" max="10" step="0.1" required></div>
+            <div class="form-group"><label>Продуктивність (м³/год):</label><input type="number" name="performance" id="inpPerf" min="0" max="300" step="0.1" required></div>
+            <div class="form-group"><label>Потужність (кВт):</label><input type="number" name="power" id="inpPower" min="0" max="150" step="0.1" required></div>
+            <div class="form-group"><label>Рівень води (м):</label><input type="number" name="waterLevel" id="inpWater" min="0" max="15" step="0.1" required></div>
+            <button type="submit" class="btn btn-submit">💾 Зберегти дані</button>
+        </form>
+    </section>
+
+    <section aria-labelledby="dash-heading">
+        <h2 id="dash-heading">Панель моніторингу</h2>
+        
+        <div class="dashboard-controls">
+            <button id="btnUpdate" class="btn btn-update" aria-label="Оновити дані вручну">🔄 Оновити вручну</button>
+            <label aria-live="polite">
+                <input type="checkbox" id="checkAutoUpdate" checked> Авто-оновлення (3 сек)
+            </label>
+            <div id="lastUpdateTime" style="font-size: 12px; color: #666;"></div>
+        </div>
+
+        <div class="grid" aria-live="polite">
+            <div class="card" id="card-pressure">Тиск <span>--</span></div>
+            <div class="card" id="card-performance">Продуктивність <span>--</span></div>
+            <div class="card" id="card-power">Потужність <span>--</span></div>
+            <div class="card" id="card-waterLevel">Рівень води <span>--</span></div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="pressureChart" aria-label="Графік історії тиску"></canvas>
+        </div>
+
+        <button id="btnExport" class="btn btn-export">📥 Експорт історії (JSON)</button>
+    </section>
+</main>
+
+<script>
+    document.getElementById('btnRandom').addEventListener('click', () => {
+        document.getElementById('opName').value = "Оператор " + Math.floor(Math.random() * 100);
+        document.getElementById('inpPressure').value = (Math.random() * (7 - 2) + 2).toFixed(1); 
+        document.getElementById('inpPerf').value = (Math.random() * (220 - 40) + 40).toFixed(1);
+        document.getElementById('inpPower').value = (Math.random() * (110 - 10) + 10).toFixed(1);
+        document.getElementById('inpWater').value = (Math.random() * (12 - 1) + 1).toFixed(1);
+    });
+
+   
+    function playAlarm() {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(400, ctx.currentTime); 
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.2); 
+    }
+
+    let isCriticalFound = false;
+    function evaluateStatus(value, normMin, normMax, limitMin, limitMax) {
+        const val = parseFloat(value);
+        if (val < limitMin || val > limitMax) { isCriticalFound = true; return 'status-critical'; }
+        if (val >= normMin && val <= normMax) return 'status-normal';
+        return 'status-warning';
+    }
+
+    function updateCard(cardId, value, unit, statusClass) {
+        const card = document.getElementById(cardId);
+        card.querySelector('span').textContent = `${value} ${unit}`;
+        card.className = `card ${statusClass}`;
+    }
+
+    let myChart;
+    function initChart() {
+        const ctx = document.getElementById('pressureChart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [{ label: 'Історія тиску (атм)', borderColor: '#007bff', backgroundColor: 'rgba(0, 123, 255, 0.2)', data: [], fill: true, tension: 0.3 }] },
+            options: { responsive: true, maintainAspectRatio: false, scales: { y: { suggestedMin: 0, suggestedMax: 8 } } }
+        });
+    }
+    initChart();
+
+    async function updateChartData() {
+        try {
+            const res = await fetch('/api/data/history');
+            const data = await res.json();
+            if(data && data.length > 0) {
+                myChart.data.labels = data.map(d => new Date(d.timestamp).toLocaleTimeString());
+                myChart.data.datasets[0].data = data.map(d => d.pressure);
+                myChart.update();
+            }
+        } catch (e) { console.error('Помилка графіка:', e); }
+    }
+
+    async function fetchLatestData() {
+        try {
+            isCriticalFound = false;
+            const response = await fetch('/api/data/latest');
+            if (!response.ok) throw new Error("Мережева помилка");
+            const data = await response.json();
+
+            if (data) {
+                updateCard('card-pressure', data.pressure, 'атм', evaluateStatus(data.pressure, 4, 5.5, 3, 6));
+                updateCard('card-performance', data.performance, 'м³/год', evaluateStatus(data.performance, 80, 150, 50, 200));
+                updateCard('card-power', data.power, 'кВт', evaluateStatus(data.power, 30, 80, 0, 100));
+                updateCard('card-waterLevel', data.waterLevel, 'м', evaluateStatus(data.waterLevel, 3, 8, 0, 10));
+
+                document.getElementById('lastUpdateTime').textContent = 'Оновлено: ' + new Date().toLocaleTimeString();
+                
+               
+                if (isCriticalFound) playAlarm();
+            }
+            updateChartData();
+        } catch (error) {
+            console.error('Помилка завантаження:', error);
+            document.getElementById('lastUpdateTime').textContent = 'Помилка підключення!';
+        }
+    }
+
+  
+    document.getElementById('btnUpdate').addEventListener('click', fetchLatestData);
+    let intervalId = setInterval(fetchLatestData, 3000);
+    document.getElementById('checkAutoUpdate').addEventListener('change', (e) => {
+        if (e.target.checked) intervalId = setInterval(fetchLatestData, 3000);
+        else clearInterval(intervalId);
+    });
+
+
+    document.getElementById('btnExport').addEventListener('click', async () => {
+        const res = await fetch('/api/data/history');
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "scada_history.json";
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+
+    fetchLatestData();
+</script>
+</body>
+</html>

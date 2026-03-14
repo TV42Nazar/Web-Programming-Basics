@@ -1,0 +1,137 @@
+[
+  {
+    "operatorName": "Оператор 17",
+    "objectType": "Насосна станція",
+    "pressure": "3.6",
+    "performance": "199.2",
+    "power": "17.0",
+    "waterLevel": "7.5",
+    "timestamp": "2026-03-14T15:33:55.365Z"
+  },
+  {
+    "operatorName": "Оператор 66",
+    "objectType": "Насосна станція",
+    "pressure": "3.1",
+    "performance": "154.6",
+    "power": "29.5",
+    "waterLevel": "10.1",
+    "timestamp": "2026-03-14T15:35:31.937Z"
+  },
+  {
+    "operatorName": "Оператор 48",
+    "objectType": "Насосна станція",
+    "pressure": "5.6",
+    "performance": "149.9",
+    "power": "28.8",
+    "waterLevel": "6.5",
+    "timestamp": "2026-03-14T15:36:15.717Z"
+  },
+  {
+    "operatorName": "Оператор 83",
+    "objectType": "Насосна станція",
+    "pressure": "5.6",
+    "performance": "195.9",
+    "power": "105.5",
+    "waterLevel": "11.1",
+    "timestamp": "2026-03-14T15:36:17.203Z"
+  },
+  {
+    "operatorName": "Оператор 93",
+    "objectType": "Насосна станція",
+    "pressure": "6.0",
+    "performance": "174.0",
+    "power": "102.2",
+    "waterLevel": "2.1",
+    "timestamp": "2026-03-14T15:37:25.958Z"
+  },
+  {
+    "operatorName": "Оператор 90",
+    "objectType": "Насосна станція",
+    "pressure": "4.5",
+    "performance": "126.6",
+    "power": "89.5",
+    "waterLevel": "1.1",
+    "timestamp": "2026-03-14T15:37:28.222Z"
+  },
+  {
+    "operatorName": "Оператор 73",
+    "objectType": "Насосна станція",
+    "pressure": "6.4",
+    "performance": "181.1",
+    "power": "78.2",
+    "waterLevel": "7.7",
+    "timestamp": "2026-03-14T15:37:54.990Z"
+  },
+  {
+    "operatorName": "Оператор 65",
+    "objectType": "Насосна станція",
+    "pressure": "2.2",
+    "performance": "94.5",
+    "power": "68.0",
+    "waterLevel": "4.7",
+    "timestamp": "2026-03-14T15:37:56.401Z"
+  },
+  {
+    "operatorName": "Оператор 16",
+    "objectType": "Насосна станція",
+    "pressure": "6.9",
+    "performance": "197.8",
+    "power": "100.8",
+    "waterLevel": "4.6",
+    "timestamp": "2026-03-14T15:37:57.704Z"
+  },
+  {
+    "operatorName": "Оператор 79",
+    "objectType": "Насосна станція",
+    "pressure": "5.3",
+    "performance": "88.3",
+    "power": "53.5",
+    "waterLevel": "11.8",
+    "timestamp": "2026-03-14T15:37:59.071Z"
+  },
+  {
+    "operatorName": "Оператор 30",
+    "objectType": "Насосна станція",
+    "pressure": "6.8",
+    "performance": "134.5",
+    "power": "75.9",
+    "waterLevel": "1.4",
+    "timestamp": "2026-03-14T15:38:00.655Z"
+  },
+  {
+    "operatorName": "Оператор 21",
+    "objectType": "Насосна станція",
+    "pressure": "6.4",
+    "performance": "121.1",
+    "power": "44.1",
+    "waterLevel": "9.3",
+    "timestamp": "2026-03-14T15:38:02.222Z"
+  },
+  {
+    "operatorName": "Оператор 89",
+    "objectType": "Насосна станція",
+    "pressure": "4.4",
+    "performance": "86.5",
+    "power": "35.4",
+    "waterLevel": "6.5",
+    "timestamp": "2026-03-14T15:38:03.889Z"
+  },
+  {
+    "operatorName": "Оператор 7",
+    "objectType": "Насосна станція",
+    "pressure": "5.0",
+    "performance": "132.3",
+    "power": "40.3",
+    "waterLevel": "1.8",
+    "timestamp": "2026-03-14T15:38:06.627Z"
+  },
+  {
+    "operatorName": "Оператор 26",
+    "objectType": "Насосна станція",
+    "pressure": "3.2",
+    "performance": "175.7",
+    "power": "66.8",
+    "waterLevel": "5.7",
+    "timestamp": "2026-03-14T15:38:08.495Z"
+  }
+]
