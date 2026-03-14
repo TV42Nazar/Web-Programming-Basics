@@ -1,0 +1,15 @@
+[
+  {
+    "operatorName": "Василь",
+    "objectType": "Насосна станція 1",
+    "address": "Потужного Володі 7а",
+    "pressure": "3.2",
+    "performance": "130",
+    "power": "50",
+    "waterLevel": "9",
+    "pumpCount": "10",
+    "rotationFreq": "35",
+    "engineTemp": "70",
+    "timestamp": "2026-03-14T13:06:05.059Z"
+  }
+]
