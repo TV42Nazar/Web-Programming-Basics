@@ -56,11 +56,11 @@
 
 **Схема Endpoints та HTTP методи:**
 
-1.  `GET /api/lighting-systems` — Отримання списку всіх систем (200 OK).
-2.  `GET /api/lighting-systems/:id` — Отримання даних конкретної системи (200 OK, 404 Not Found).
-3.  `POST /api/lighting-systems/:id/control` — Керування системою (перемикання режиму, увімкнення ламп) (200 OK, 400 Bad Request, 404 Not Found).
-4.  `PUT /api/lighting-systems/:id/brightness` — Зміна яскравості в ручному режимі (200 OK, 400 Bad Request).
-5.  `DELETE /api/lighting-systems/:id` — Видалення системи (200 OK, 404 Not Found).
+1.  `GET /api/lighting-systems` - Отримання списку всіх систем (200 OK).
+2.  `GET /api/lighting-systems/:id` - Отримання даних конкретної системи (200 OK, 404 Not Found).
+3.  `POST /api/lighting-systems/:id/control` - Керування системою (перемикання режиму, увімкнення ламп) (200 OK, 400 Bad Request, 404 Not Found).
+4.  `PUT /api/lighting-systems/:id/brightness` - Зміна яскравості в ручному режимі (200 OK, 400 Bad Request).
+5.  `DELETE /api/lighting-systems/:id` - Видалення системи (200 OK, 404 Not Found).
 
 **Об'єкт "Система освітлення"**
 Цей об'єкт є основним ресурсом API.
