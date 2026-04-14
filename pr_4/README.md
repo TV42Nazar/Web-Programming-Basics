@@ -121,6 +121,19 @@
 
 <img width="349" height="387" alt="image" src="https://github.com/user-attachments/assets/e0af42d1-f2f6-4b3f-b006-ddd27b8850c8" />
 
+----
+
+<img width="408" height="629" alt="image" src="https://github.com/user-attachments/assets/7621431f-d757-4042-9495-f3390e3def8a" />
+
+<img width="561" height="729" alt="image" src="https://github.com/user-attachments/assets/79013545-91c3-468d-9cd4-19608d5de6b2" />
+
+<img width="655" height="750" alt="image" src="https://github.com/user-attachments/assets/47386586-7046-496b-ab02-d3faf7286ba7" />
+
+<img width="643" height="773" alt="image" src="https://github.com/user-attachments/assets/9e6715f5-dcc6-4923-a2f4-c378b79cb1d8" />
+
+<img width="639" height="750" alt="image" src="https://github.com/user-attachments/assets/98fbdf4f-8885-4b1a-887a-2b314fb07714" />
+
+----
 
 **Діаграма послідовності**
 
