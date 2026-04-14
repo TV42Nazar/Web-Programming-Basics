@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дашборд: Розумне освітлення</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; }
+        .panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        select, input[type="range"] { width: 100%; }
+        .stat-box { padding: 15px; background: #e3f2fd; border-radius: 5px; margin-top: 20px; font-size: 1.2em; text-align: center; color: #0d47a1; }
+        .lamps-area { margin-top: 20px; padding: 20px; background: #2c3e50; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .lamp { width: 15px; height: 15px; border-radius: 50%; background: #555; transition: all 0.2s; }
+    </style>
+</head>
+<body>
+
+<div class="panel">
+    <h2>Керування освітленням</h2>
+
+    <div class="control-group">
+        <label>Оберіть систему освітлення:</label>
+        <select id="system-select">
+        </select>
+    </div>
+
+    <div class="control-group">
+        <label>Режим роботи:</label>
+        <input type="radio" name="mode" value="auto" id="mode-auto"> <label for="mode-auto" style="display:inline; font-weight:normal;">Авто</label>
+        <input type="radio" name="mode" value="manual" id="mode-manual"> <label for="mode-manual" style="display:inline; font-weight:normal;">Ручний</label>
+        <input type="radio" name="mode" value="schedule" id="mode-schedule"> <label for="mode-schedule" style="display:inline; font-weight:normal;">Розклад</label>
+    </div>
+
+    <div class="control-group">
+        <label>Яскравість: <span id="brightness-val">0</span>%</label>
+        <input type="range" id="brightness-slider" min="0" max="100" value="0">
+    </div>
+
+    <div class="control-group">
+        <label>Увімкнені світильники: <span id="lamps-val">0</span> / <span id="max-lamps">0</span></label>
+        <input type="range" id="lamps-slider" min="0" max="100" value="0">
+    </div>
+
+    <div class="stat-box">
+        Поточна споживана потужність: <strong id="power-display">0.00 кВт</strong>
+    </div>
+
+    <div class="lamps-area" id="lamps-container"></div>
+</div>
+
+<script>
+    let systems = {};
+    let currentId = null;
+
+    // Функція завантаження даних з нашого REST API (GET)
+    async function fetchSystems() {
+        try {
+            const response = await fetch('/api/lighting-systems');
+            const data = await response.json();
+
+            const selectEl = document.getElementById('system-select');
+            selectEl.innerHTML = ''; // очищуємо список
+
+            data.forEach((sys, index) => {
+                systems[sys.id] = sys;
+                const option = document.createElement('option');
+                option.value = sys.id;
+                option.textContent = sys.name;
+                selectEl.appendChild(option);
+
+                if (index === 0) currentId = sys.id; // Обираємо першу систему за замовчуванням
+            });
+
+            if (currentId) updateUI();
+        } catch (error) {
+            console.error("Помилка завантаження даних:", error);
+        }
+    }
+
+    // Відправка оновленої яскравості на сервер (PUT)
+    async function apiUpdateBrightness(val) {
+        await fetch(`/api/lighting-systems/${currentId}/brightness`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ brightness: val })
+        });
+        fetchSystems(); // Оновлюємо дані після зміни
+    }
+
+    // Відправка оновленого керування (режим/ліхтарі) на сервер (POST)
+    async function apiUpdateControl(mode, activeLamps) {
+        await fetch(`/api/lighting-systems/${currentId}/control`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: mode, activeLamps: activeLamps })
+        });
+        fetchSystems(); // Оновлюємо дані
+    }
+
+    function updateUI() {
+        if (!currentId || !systems[currentId]) return;
+        const sys = systems[currentId];
+
+        document.querySelector(`input[name="mode"][value="${sys.mode}"]`).checked = true;
+
+        document.getElementById('brightness-slider').value = sys.brightness;
+        document.getElementById('brightness-val').innerText = sys.brightness;
+
+        const lampsSlider = document.getElementById('lamps-slider');
+        lampsSlider.max = sys.lampCount;
+        lampsSlider.value = sys.activeLamps;
+
+        document.getElementById('lamps-val').innerText = sys.activeLamps;
+        document.getElementById('max-lamps').innerText = sys.lampCount;
+        document.getElementById('power-display').innerText = `${sys.totalPower} кВт`;
+
+        const isManual = sys.mode === 'manual';
+        document.getElementById('brightness-slider').disabled = !isManual;
+        lampsSlider.disabled = !isManual;
+
+        renderLamps(sys);
+    }
+
+    function renderLamps(sys) {
+        const container = document.getElementById('lamps-container');
+        container.innerHTML = '';
+        const visualLampsCount = Math.min(sys.lampCount, 50);
+        const activeRatio = sys.activeLamps / sys.lampCount;
+        const visualActiveCount = Math.round(visualLampsCount * activeRatio);
+
+        for (let i = 0; i < visualLampsCount; i++) {
+            const lamp = document.createElement('div');
+            lamp.className = 'lamp';
+            if (i < visualActiveCount) {
+                const glow = sys.brightness / 100;
+                lamp.style.backgroundColor = `rgba(255, 215, 0, ${Math.max(0.2, glow)})`;
+                lamp.style.boxShadow = `0 0 ${15 * glow}px rgba(255, 215, 0, ${glow})`;
+            }
+            container.appendChild(lamp);
+        }
+    }
+
+    // Слухачі подій
+    document.getElementById('system-select').addEventListener('change', (e) => {
+        currentId = parseInt(e.target.value);
+        updateUI();
+    });
+
+    document.getElementsByName('mode').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const currentLamps = systems[currentId].activeLamps;
+            apiUpdateControl(e.target.value, currentLamps);
+        });
+    });
+
+    document.getElementById('brightness-slider').addEventListener('change', (e) => {
+        apiUpdateBrightness(parseInt(e.target.value));
+    });
+
+    document.getElementById('lamps-slider').addEventListener('change', (e) => {
+        const currentMode = systems[currentId].mode;
+        apiUpdateControl(currentMode, parseInt(e.target.value));
+    });
+
+    // Запуск
+    fetchSystems();
+</script>
+</body>
+</html>
