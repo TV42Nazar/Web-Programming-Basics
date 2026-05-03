@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моніторинг Біогазової Станції</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Біогазова електростанція</h1>
+        <div id="connection-status" class="status disconnected">Очікування...</div>
+    </header>
+
+    <main class="dashboard">
+        <!-- Індикатори -->
+        <section class="metrics">
+            <div class="card">
+                <h3>Електрична потужність</h3>
+                <div class="value"><span id="val-power">0</span> кВт</div>
+            </div>
+            <div class="card">
+                <h3>Температура ферментера</h3>
+                <div class="value" id="val-temp-container"><span id="val-temp">0</span> °C</div>
+            </div>
+            <div class="card">
+                <h3>Завантаження субстрату</h3>
+                <div class="value"><span id="val-substrate">0</span> т/добу</div>
+            </div>
+        </section>
+
+        <!-- Графіки -->
+        <section class="charts">
+            <div class="chart-container">
+                <canvas id="biogasChart"></canvas>
+            </div>
+            <div class="chart-container pie-container">
+                <canvas id="gasCompositionChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Таблиця -->
+        <section class="data-table">
+            <h2>Останні показники</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Час</th>
+                        <th>Біогаз (м³/год)</th>
+                        <th>Метан (%)</th>
+                        <th>Потужність (кВт)</th>
+                        <th>Температура (°C)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Рядки додаватимуться через JS -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
